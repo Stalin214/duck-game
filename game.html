@@ -2,9 +2,17 @@
 <html>
 <body>
     <h1 id="score">0</h1>
-    <button onclick="score++">Клик</button>
+    <button onclick="score++; document.getElementById('score').innerText = score;">Клик</button>
     <br>
-    <button onclick="window.location.href='https://t.me/duck_earner_bot?start=add_' + score">Сохранить</button>
-    <script>let score = 0; setInterval(() => document.getElementById('score').innerText = score, 100);</script>
+    <button onclick="saveResult()">Сохранить</button>
+    
+    <script>
+        let score = 0;
+        function saveResult() {
+            // Это окно покажет, срабатывает ли функция
+            alert("Пытаюсь сохранить: " + score);
+            window.location.href = 'https://t.me/duck_earner_bot?start=add_' + score;
+        }
+    </script>
 </body>
 </html>
