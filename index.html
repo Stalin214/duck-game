@@ -13,6 +13,7 @@
             text-align: center;
             padding-top: 50px;
             margin: 0;
+            user-select: none;
         }
         .balance {
             font-size: 32px;
@@ -26,7 +27,6 @@
             border: none;
             cursor: pointer;
             transition: transform 0.1s;
-            user-select: none;
             margin-bottom: 40px;
         }
         .duck-btn:active {
@@ -42,7 +42,6 @@
             border-radius: 10px;
             cursor: pointer;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-            transition: background 0.2s;
         }
         .save-btn:active {
             background-color: #1d85d6;
@@ -58,7 +57,7 @@
 
     <script>
         const tg = window.Telegram.WebApp;
-        tg.expand(); // Разворачиваем на весь экран
+        tg.expand();
 
         let sessionClicks = 0;
         let totalScore = 0;
@@ -67,18 +66,28 @@
         const clickerBtn = document.getElementById('clicker');
         const saveBtn = document.getElementById('save');
 
-        // Клик по утке
         clickerBtn.addEventListener('click', () => {
             sessionClicks++;
             totalScore++;
             scoreElement.innerText = totalScore;
         });
 
-        // Клик по кнопке сохранения
         saveBtn.addEventListener('click', () => {
             if (sessionClicks > 0) {
-                // Передаем клики в Telegram и закрываем окно
-                tg.sendData(JSON.stringify({ clicks: sessionClicks }));
+                // Вызываем нативное окно Telegram, которое работает везде
+                tg.showPopup({
+                    title: 'Сохранение игры',
+                    message: `Вы накликали ${sessionClicks} монет. Сохранить их?`,
+                    buttons: [
+                        {id: 'save', type: 'default', text: 'Да, сохранить'},
+                        {id: 'cancel', type: 'cancel', text: 'Отмена'}
+                    ]
+                }, function(buttonId) {
+                    if (buttonId === 'save') {
+                        tg.sendData(JSON.stringify({ clicks: sessionClicks }));
+                        tg.close();
+                    }
+                });
             } else {
                 tg.close();
             }
