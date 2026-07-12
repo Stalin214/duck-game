@@ -56,38 +56,31 @@
     <button class="save-btn" id="save">Сохранить и выйти 💾</button>
 
     <script>
+        // Инициализируем Telegram WebApp
         const tg = window.Telegram.WebApp;
         tg.expand();
 
         let sessionClicks = 0;
-        let totalScore = 0;
 
         const scoreElement = document.getElementById('score');
         const clickerBtn = document.getElementById('clicker');
         const saveBtn = document.getElementById('save');
 
+        // Логика кликов
         clickerBtn.addEventListener('click', () => {
             sessionClicks++;
-            totalScore++;
-            scoreElement.innerText = totalScore;
+            scoreElement.innerText = sessionClicks;
         });
 
+        // Логика сохранения
         saveBtn.addEventListener('click', () => {
             if (sessionClicks > 0) {
-                // Вызываем нативное окно Telegram, которое работает везде
-                tg.showPopup({
-                    title: 'Сохранение игры',
-                    message: `Вы накликали ${sessionClicks} монет. Сохранить их?`,
-                    buttons: [
-                        {id: 'save', type: 'default', text: 'Да, сохранить'},
-                        {id: 'cancel', type: 'cancel', text: 'Отмена'}
-                    ]
-                }, function(buttonId) {
-                    if (buttonId === 'save') {
-                        tg.sendData(JSON.stringify({ clicks: sessionClicks }));
-                        tg.close();
-                    }
-                });
+                try {
+                    // Отправляем данные строкой JSON
+                    tg.sendData(JSON.stringify({ clicks: sessionClicks }));
+                } catch (error) {
+                    alert("Ошибка отправки данных: " + error.message);
+                }
             } else {
                 tg.close();
             }
