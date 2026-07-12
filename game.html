@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Duck Clicker</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #1a1a1a;
+            color: white;
+            text-align: center;
+            padding-top: 50px;
+            margin: 0;
+            user-select: none;
+        }
+        .balance {
+            font-size: 32px;
+            font-weight: bold;
+            color: #ffd700;
+            margin-bottom: 20px;
+        }
+        .duck-btn {
+            font-size: 120px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.1s;
+            margin-bottom: 40px;
+        }
+        .duck-btn:active {
+            transform: scale(0.95);
+        }
+        .save-btn {
+            background-color: #2ea6ff;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 10px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+        .save-btn:active {
+            background-color: #1d85d6;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="balance">🦆 <span id="score">0</span></div>
+    <button class="duck-btn" id="clicker">🦆</button>
+    <br>
+    <button class="save-btn" id="save">Сохранить и выйти 💾</button>
+
+    <script>
+        // Инициализируем Telegram WebApp
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+
+        let sessionClicks = 0;
+
+        const scoreElement = document.getElementById('score');
+        const clickerBtn = document.getElementById('clicker');
+        const saveBtn = document.getElementById('save');
+
+        // Логика кликов
+        clickerBtn.addEventListener('click', () => {
+            sessionClicks++;
+            scoreElement.innerText = sessionClicks;
+        });
+
+        // Логика сохранения
+        saveBtn.addEventListener('click', () => {
+            if (sessionClicks > 0) {
+                try {
+                    // Отправляем данные строкой JSON
+                    tg.sendData(JSON.stringify({ clicks: sessionClicks }));
+                } catch (error) {
+                    alert("Ошибка отправки данных: " + error.message);
+                }
+            } else {
+                tg.close();
+            }
+        });
+    </script>
+</body>
+</html>
