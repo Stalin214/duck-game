@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Duck Clicker</title>
-    <!-- Подключаем Telegram WebApp, чтобы игра работала внутри мессенджера -->
+    <!-- Подключаем Telegram WebApp -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         body {
@@ -22,15 +22,31 @@
             margin-bottom: 20px;
         }
         .duck-btn {
-            font-size: 100px;
+            font-size: 120px;
             background: none;
             border: none;
             cursor: pointer;
             transition: transform 0.1s;
             user-select: none;
+            margin-bottom: 40px;
         }
         .duck-btn:active {
-            transform: scale(0.9);
+            transform: scale(0.95);
+        }
+        .save-btn {
+            background-color: #2ea6ff;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 10px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            transition: background 0.2s;
+        }
+        .save-btn:active {
+            background-color: #1d85d6;
         }
     </style>
 </head>
@@ -38,19 +54,38 @@
 
     <div class="balance">🦆 <span id="score">0</span></div>
     <button class="duck-btn" id="clicker">🦆</button>
+    <br>
+    <!-- Кнопка для отправки монет в базу бота -->
+    <button class="save-btn" id="save">Сохранить и выйти 💾</button>
 
     <script>
         const tg = window.Telegram.WebApp;
-        tg.expand(); // Разворачиваем игру на весь экран Telegram
+        tg.expand(); // Разворачиваем на весь экран
 
-        let score = parseInt(localStorage.getItem('duck_score')) || 0;
-        document.getElementById('score').innerText = score;
+        // Считаем именно новые клики за текущую сессию
+        let sessionClicks = 0;
+        let totalScore = 0;
 
+        const scoreElement = document.getElementById('score');
         const clickerBtn = document.getElementById('clicker');
+        const saveBtn = document.getElementById('save');
+
+        // Клик по утке
         clickerBtn.addEventListener('click', () => {
-            score++;
-            document.getElementById('score').innerText = score;
-            localStorage.setItem('duck_score', score);
+            sessionClicks++;
+            totalScore++;
+            scoreElement.innerText = totalScore;
+        });
+
+        // Клик по кнопке сохранения
+        saveBtn.addEventListener('click', () => {
+            if (sessionClicks > 0) {
+                // Упаковываем клики в JSON и отправляем боту
+                const dataToSend = JSON.stringify({ clicks: sessionClicks });
+                tg.sendData(dataToSend);
+            } else {
+                tg.close(); // Если не кликал, просто закрываем
+            }
         });
     </script>
 </body>
