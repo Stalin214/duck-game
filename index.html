@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Duck Clicker</title>
-    <!-- Подключаем Telegram WebApp -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         body {
@@ -55,14 +54,12 @@
     <div class="balance">🦆 <span id="score">0</span></div>
     <button class="duck-btn" id="clicker">🦆</button>
     <br>
-    <!-- Кнопка для отправки монет в базу бота -->
     <button class="save-btn" id="save">Сохранить и выйти 💾</button>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand(); // Разворачиваем на весь экран
 
-        // Считаем именно новые клики за текущую сессию
         let sessionClicks = 0;
         let totalScore = 0;
 
@@ -80,11 +77,10 @@
         // Клик по кнопке сохранения
         saveBtn.addEventListener('click', () => {
             if (sessionClicks > 0) {
-                // Упаковываем клики в JSON и отправляем боту
-                const dataToSend = JSON.stringify({ clicks: sessionClicks });
-                tg.sendData(dataToSend);
+                // Передаем клики в Telegram и закрываем окно
+                tg.sendData(JSON.stringify({ clicks: sessionClicks }));
             } else {
-                tg.close(); // Если не кликал, просто закрываем
+                tg.close();
             }
         });
     </script>
